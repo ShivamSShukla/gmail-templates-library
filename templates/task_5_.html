@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gayathri's Portfolio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    header {
+      background: #003366;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .container {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .projects img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .api-data {
+      font-style: italic;
+      background: #e0f7fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    footer {
+      background: #003366;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Gayathri's Portfolio</h1>
+  <p>Web Developer | JavaScript Enthusiast | UI/UX Learner</p>
+</header>
+
+<div class="container">
+  <!-- About Section -->
+  <section>
+    <h2>About Me</h2>
+    <p>Hello! I’m Gayathri, a Computer Science student passionate about building web applications using HTML, CSS, and JavaScript.</p>
+  </section>
+
+  <!-- Projects Section -->
+  <section class="projects">
+    <h2>My Projects</h2>
+    <img src="https://via.placeholder.com/400x200?text=Project+1" loading="lazy" alt="Project 1">
+    <img src="https://via.placeholder.com/400x200?text=Project+2" loading="lazy" alt="Project 2">
+    <p>I’ve created responsive designs, carousels, and API-based tools in previous tasks. Here's a glimpse.</p>
+  </section>
+
+  <!-- API Section -->
+  <section>
+    <h2>Live API Data (Random Joke)</h2>
+    <button onclick="getJoke()">Get a Joke</button>
+    <div id="joke" class="api-data">Click the button to see a random joke.</div>
+  </section>
+
+  <!-- Contact Section -->
+  <section>
+    <h2>Contact</h2>
+    <p>Email: gayathriumapathy22@gmail.com</p>
+    <p>Phone: 8870990481</p>
+  </section>
+</div>
+
+<footer>
+  © 2025 Gayathri Umapathy. Built with ❤️ using HTML, CSS, and JavaScript.
+</footer>
+
+<script>
+  function getJoke() {
+    fetch('https://official-joke-api.appspot.com/jokes/random')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('joke').textContent = `${data.setup} 😂 ${data.punchline}`;
+      })
+      .catch(() => {
+        document.getElementById('joke').textContent = 'Could not fetch a joke at the moment.';
+      });
+  }
+</script>
+
+</body>
+</html>
