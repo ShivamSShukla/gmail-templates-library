@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festive Makers’ Studio Registration</title>
+    <style>
+        /* Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fef9e7;
+            color: #4b2e83;
+            margin: 0;
+            padding: 0;
+        }
+        .language-toggle {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .language-toggle button {
+            background: white;
+            border: 1px solid #d32f2f;
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        .language-toggle button.active {
+            background: #d32f2f;
+            color: white;
+            font-weight: bold;
+        }
+        header {
+            background-color: #d32f2f;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+        header h1 {
+            text-transform: uppercase;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            color: #b71c1c;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #228B22;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+        button:hover {
+            background-color: #b71c1c;
+        }
+        .table-layout {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .seat {
+            width: 40px;
+            height: 40px;
+            background-color: #81c784;
+            color: white;
+            text-align: center;
+            line-height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .seat.taken {
+            background-color: #e57373;
+            cursor: not-allowed;
+        }
+        .seat.selected {
+            background-color: #fbc02d;
+        }
+        .description {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #228B22;
+            line-height: 1.6;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-toggle">
+        <button id="enButton" class="active">English</button>
+        <button id="hyButton">Հայերեն</button>
+    </div>
+    <header>
+        <h1 id="headerTitle">Festive Makers’ Studio</h1>
+        <p id="headerSubtitle">December 8, at the Dilijan Community Center</p>
+    </header>
+    <div class="container">
+        <h2 id="registerTitle">Register Now</h2>
+        <div class="description">
+            <div id="descriptionEn">
+                <!-- English Description -->
+                <p>
+                    Join us for a magical holiday crafting experience at the Dilijan Community Center! ✨  
+                    Transform ordinary candles into dazzling works of art with the enchanting decoupage technique, or design stunning eco-friendly bags with festive Christmas patterns. 🎄 Whether you're a first-time crafter or a seasoned artist, you'll discover the joy of bringing your creative vision to life!
+                </p>
+                <p>
+                    Wrap yourself in the warmth of holiday spirit as you craft one-of-a-kind pieces that will brighten your home or become treasured gifts. 🎁 Our expert guides will walk you through every step, ensuring you leave with a masterpiece that sparkles with your personal touch.
+                </p>
+                <p>
+                    Don't miss this chance to:
+                    <ul>
+                        <li>🕯️ Master the art of decoupage on candles</li>
+                        <li>🎁 Create eco-chic Christmas bags</li>
+                        <li>🤝 Meet fellow creative spirits</li>
+                        <li>🎨 Take home unique handmade treasures</li>
+                    </ul>
+                    Spaces are limited – reserve your spot for an unforgettable afternoon of creativity and holiday cheer! 🕯️🎨  
+                </p>
+            </div>
+            <div id="descriptionHy" class="hidden">
+                <!-- Armenian Description -->
+                <p>
+                    Պատրաստվե՜ք անմոռանալի ստեղծագործական արկածի՝ Դիլիջանի Համայնքային Կենտրոնում: 🌟  
+                    Բացահայտեք ձեռագործ արվեստի կախարդական աշխարհը, որտեղ սովորական մոմերը վերածվում են հմայիչ արվեստի գործերի, իսկ պարզ պայուսակները՝ տոնական գեղեցկության: 🎄  
+                </p>
+                <p>
+                    Միացեք մեր ջերմ ընտանեկան մթնոլորտին, որտեղ ստեղծագործական ոգին միահյուսվում է տոնական տրամադրությանը: 🎁  
+                </p>
+                <p>
+                    <ul>
+                        <li>🕯️ Հրաշագեղ դեկուպաժված մոմեր</li>
+                        <li>🎁 Ոճային էկո պայուսակներ՝ տոնական զարդանախշերով</li>
+                        <li>🤝 Անկրկնելի նվերներ Ձեր սիրելիների համար</li>
+                    </ul>
+                    Տեղերը խիստ սահմանափակ են։ Շտապեք ամրագրել Ձեր տեղը այս հրաշալի փորձառության համար! ✨  
+                </p>
+            </div>
+        </div>
+        <form id="registrationForm">
+            <label for="company" id="labelCompany">Name of Company</label>
+            <input type="text" id="company" name="company" required>
+            
+            <label for="contact" id="labelContact">Contact Person</label>
+            <input type="text" id="contact" name="contact" required>
+            
+            <label for="email" id="labelEmail">Email Address</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="phone" id="labelPhone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required>
+            
+            <label for="workshop" id="labelWorkshop">Choose Workshop</label>
+            <select id="workshop" name="workshop" required>
+                <option value="candleMaking">Candle-Making Workshop with Decoupage Technique (11:00-13:00)</option>
+                <option value="ornaments">Christmas Ornaments Workshop with Decoupage Technique (13:30-15:30)</option>
+                <option value="ecoBag">Eco-Bag Workshop with New Year Themes (16:00-18:00)</option>
+            </select>
+            
+            <label id="labelSeats">Select Your Seats</label>
+            <div id="seatsContainer" class="table-layout"></div>
+            
+            <button type="submit" id="submitButton">Submit</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3.11.0/dist/email.min.js"></script>
+    <script>
+        (function(){
+            emailjs.init('dAv7X8JjnRJvnRlVx'); // Initialize EmailJS with your Public Key
+        })();
+
+        const translations = {
+            en: {
+                headerTitle: "Festive Makers’ Studio",
+                headerSubtitle: "December 8, at the Dilijan Community Center",
+                registerTitle: "Register Now",
+                labelCompany: "Name of Company",
+                labelContact: "Contact Person",
+                labelEmail: "Email Address",
+                labelPhone: "Phone Number",
+                labelWorkshop: "Choose Workshop",
+                labelSeats: "Select Your Seats",
+                submitButton: "Submit"
+            },
+            hy: {
+                headerTitle: "Վարպետների Ամանորյա Արվեստանոց",
+                headerSubtitle: "Դեկտեմբերի 8, Դիլիջանի Համայնքային Կենտրոնում",
+                registerTitle: "Գրանցվեք հիմա",
+                labelCompany: "Կազմակերպության Անվանումը",
+                labelContact: "Կոնտակտային Անձ",
+                labelEmail: "Էլ. Հասցե",
+                labelPhone: "Հեռախոսահամար",
+                labelWorkshop: "Ընտրեք Վարպետաց Դասը",
+                labelSeats: "Ընտրեք Ձեր Տեղերը",
+                submitButton: "Ուղարկել"
+            }
+        };
+
+        function toggleLanguage(lang) {
+            // Toggle visibility for descriptions
+            document.getElementById("descriptionEn").classList.toggle("hidden", lang !== "en");
+            document.getElementById("descriptionHy").classList.toggle("hidden", lang !== "hy");
+
+            // Update text content for other elements
+            Object.keys(translations[lang]).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // Event listeners for language toggle buttons
+        document.getElementById("enButton").addEventListener("click", () => {
+            toggleLanguage("en");
+            document.getElementById("enButton").classList.add("active");
+            document.getElementById("hyButton").classList.remove("active");
+        });
+
+        document.getElementById("hyButton").addEventListener("click", () => {
+            toggleLanguage("hy");
+            document.getElementById("hyButton").classList.add("active");
+            document.getElementById("enButton").classList.remove("active");
+        });
+
+        const totalSeats = 10;
+        let seatsTaken = {
+            ecoBag: Array(totalSeats).fill(false),
+            candleMaking: Array(totalSeats).fill(false),
+            ornaments: Array(totalSeats).fill(false)
+        };
+
+        const form = document.getElementById('registrationForm');
+        const workshopSelect = document.getElementById('workshop');
+        const seatsContainer = document.getElementById('seatsContainer');
+
+        function renderSeats() {
+            const workshop = workshopSelect.value;
+            seatsContainer.innerHTML = '';
+            seatsTaken[workshop].forEach((isTaken, index) => {
+                const seat = document.createElement('div');
+                seat.classList.add('seat');
+                if (isTaken === true) seat.classList.add('taken');
+                if (isTaken === 'selected') seat.classList.add('selected');
+                seat.innerText = index + 1;
+                if (!isTaken || isTaken === 'selected') {
+                    seat.addEventListener('click', () => toggleSeatSelection(workshop, index));
+                }
+                seatsContainer.appendChild(seat);
+            });
+        }
+
+        function toggleSeatSelection(workshop, index) {
+            seatsTaken[workshop][index] = seatsTaken[workshop][index] === 'selected' ? false : 'selected';
+            renderSeats();
+        }
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+
+            const workshop = workshopSelect.value;
+            const selectedSeats = seatsTaken[workshop]
+                .map((status, index) => (status === 'selected' ? index + 1 : null))
+                .filter(index => index !== null);
+            
+            if (selectedSeats.length === 0) {
+                alert('Please select at least one seat!');
+                return;
+            }
+            
+            selectedSeats.forEach(index => seatsTaken[workshop][index - 1] = true);
+
+            const formData = {
+                company: form.company.value,
+                contact: form.contact.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                workshop: workshop === 'ecoBag' 
+                    ? 'Eco-Bag Workshop' 
+                    : workshop === 'candleMaking' 
+                    ? 'Candle-Making Workshop with Decoupage Technique' 
+                    : 'Christmas Ornaments Workshop with Decoupage Technique',
+                seats: selectedSeats.join(', '),
+                seatCount: selectedSeats.length // Count of selected seats
+            };
+
+            emailjs.send('service_ceiv2hk', 'template_1as3nl4', formData)
+                .then(() => {
+                    alert('Registration successful! Confirmation email sent.');
+                    renderSeats();
+                    form.reset();
+                })
+                .catch(error => {
+                    console.error('EmailJS Error:', error);
+                    alert(`An error occurred: ${error.text || 'Unknown error'}. Please try again.`);
+                });
+        });
+
+        workshopSelect.addEventListener('change', renderSeats);
+        renderSeats();
+    </script>
+</body>
+</html>
