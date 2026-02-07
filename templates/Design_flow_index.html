@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Flow - Web Design Creativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background-color: #f9f9f9;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 1.8rem;
+    }
+    nav a {
+      color: #fff;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .hero {
+      background: #e0e0e0;
+      padding: 80px 40px;
+      text-align: center;
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: #555;
+    }
+    .section {
+      padding: 60px 40px;
+    }
+    .section h3 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h4 {
+      margin-bottom: 10px;
+    }
+    .contact {
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+    footer {
+      background: #000;
+      color: #ccc;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Design Flow</h1>
+    <nav>
+      <a href="#servizi">Servizi</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#contatti">Contatti</a>
+    </nav>
+  </header>  <section class="hero">
+    <h2>Web Design Moderno e Creativo</h2>
+    <p>Aiutiamo le aziende a brillare online con siti su misura, funzionali e belli.</p>
+  </section>  <section id="servizi" class="section">
+    <h3>I Nostri Servizi</h3>
+    <div class="services">
+      <div class="card">
+        <h4>Siti Vetrina</h4>
+        <p>Ideali per presentare la tua attività online in modo professionale.</p>
+      </div>
+      <div class="card">
+        <h4>E-commerce</h4>
+        <p>Soluzioni complete per vendere online con stile e sicurezza.</p>
+      </div>
+      <div class="card">
+        <h4>SEO e Manutenzione</h4>
+        <p>Ottimizziamo il tuo sito per i motori di ricerca e ne curiamo l'efficienza.</p>
+      </div>
+    </div>
+  </section>  <section id="portfolio" class="section">
+    <h3>Portfolio</h3>
+    <p style="text-align:center; color:#555;">Stiamo lavorando ai nostri primi progetti. Presto online!</p>
+  </section>  <section id="contatti" class="contact">
+    <h3>Contattaci</h3>
+    <p>Email: <a href="mailto:info@designflow.it" style="color:#4fc3f7;">info@designflow.it</a></p>
+  </section>  <footer>
+    &copy; 2025 Design Flow. Tutti i diritti riservati.
+  </footer>
+</body>
+</html>
