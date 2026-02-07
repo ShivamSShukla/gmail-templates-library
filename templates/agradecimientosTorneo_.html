@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CH Tennis Academy - Blog del Torneo Hunter's Creek Spring 2025</title>
+
+  <!-- ✅ Estilos embebidos con soporte Modo Claro/Oscuro -->
+  <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --header-bg: #0a0a23;
+      --footer-bg: #0a0a23;
+      --button-bg: #0a0a23;
+      --button-text: #fff;
+    }
+
+    body.dark {
+      --bg-color: #111;
+      --text-color: #eee;
+      --header-bg: #000033;
+      --footer-bg: #000033;
+      --button-bg: #333;
+      --button-text: #eee;
+    }
+
+    body.layout {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .header {
+      background: var(--header-bg);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .brand svg {
+      height: 50px;
+      width: auto;
+    }
+
+    .hero {
+      flex: 1;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .hero__title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero__subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .gallery__item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .hero__cta {
+      font-weight: bold;
+      margin-bottom: 2rem;
+    }
+
+    .footer {
+      background: var(--footer-bg);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin: 0.5rem;
+    }
+
+    button.reload {
+      background: var(--button-bg);
+      color: var(--button-text);
+      padding: 0.5rem 1rem;
+    }
+
+    button.reload:hover {
+      opacity: 0.85;
+    }
+
+    button.toggle-dark {
+      background: var(--button-bg);
+      color: var(--button-text);
+      padding: 0.5rem 1rem;
+    }
+
+    button.toggle-dark:hover {
+      opacity: 0.85;
+    }
+  </style>
+</head>
+
+<body class="layout">
+  <!-- ===== HEADER + NAV ===== -->
+  <header>
+    <div class="container nav" id="top">
+      <div class="nav__logo">
+        <img src="img/chTennis.png" alt="CH Tennis Academy" class="logo-img" />
+        <span>CHTennisAcademy</span>
+      </div>
+
+      <!-- Botón hamburguesa ─ visible solo <640 px -->
+      <button class="nav__toggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav__links">
+        <a href="#home" class="active">Inicio</a>
+        <a href="#about">Sobre&nbsp;Nosotros</a>
+        <a href="#programs">Programas</a>
+        <a href="#gallery">Galería</a>
+        <a href="#blog">Blog/Torneos</a>
+        <a href="#contact">Contacto</a>
+      </nav>
+
+      <button
+        class="nav__cta"
+        onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})"
+      >
+        Inscríbete
+      </button>
+    </div>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="home">
+      <h1>Crece en la cancha,<br />crece en la vida</h1>
+      <p class="lead">
+        Programas de tenis para niños de 3 a 13 años · Plazas limitadas
+      </p>
+      <button
+        class="btn-primary"
+        onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})"
+      >
+        Reserva tu clase de prueba gratuita
+      </button>
+
+      <!-- Tarjetas de misión / programas / clases -->
+      <div class="hero-cards container">
+        <div class="card">
+          <h3>Misión</h3>
+          <p>
+            Fomentar el crecimiento integral de jóvenes tenistas, potenciando
+            talento y valores desde etapas tempranas.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Programas</h3>
+          <p>Competiciones internas y abiertas para todas las edades.</p>
+        </div>
+        <div class="card">
+          <h3>Clases</h3>
+          <p>Atención 1 : 1 para mejorar técnica y estrategia de juego.</p>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- ===== PROGRAMAS ===== -->
+  <section id="programs">
+    <h2>Programas</h2>
+    <div class="grid grid-4 container">
+      <div class="program-item">
+        <h4>Mini-Aces (3–5)</h4>
+        <p>Juego y motricidad básica.</p>
+      </div>
+      <div class="program-item">
+        <h4>Junior-Start (6–9)</h4>
+        <p>Técnica básica, partidos reducidos.</p>
+      </div>
+      <div class="program-item">
+        <h4>Torneos & Eventos</h4>
+        <p>Competencias mensuales.</p>
+      </div>
+      <div class="program-item">
+        <h4>Clases Particulares</h4>
+        <p>Plan personalizado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GALERÍA ===== -->
+  <section id="gallery">
+    <h2>Galería</h2>
+    <div class="gallery container">
+      <button data-src="img/11111.png">
+        <img src="img/11111.png" alt="Drive" />
+      </button>
+      <button data-src="img/22222.png">
+        <img src="img/22222.png" alt="Saque" />
+      </button>
+      <button data-src="img/33333.png">
+        <img src="img/33333.png" alt="Coach" />
+      </button>
+      <button data-src="img/44444.png">
+        <img src="img/44444.png" alt="Partido" />
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== BLOG / TORNEOS (placeholder) ===== -->
+  <section id="blog">
+    <h2>Blog / Torneos</h2>
+    <div class="container">
+      <p style="text-align: center">
+        Próximamente artículos y resultados del torneo 2025.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTO ===== -->
+  <section id="contact">
+    <h2>Contacto</h2>
+    <div class="container" style="max-width: 500px">
+      <form
+        onsubmit="event.preventDefault();alert('¡Mensaje enviado!');this.reset()"
+        class="contact-form"
+      >
+        <input type="text" placeholder="Nombre" required />
+        <input type="email" placeholder="Email" required />
+        <input type="tel" placeholder="Teléfono" required />
+        <textarea rows="4" placeholder="Mensaje"></textarea>
+        <button class="btn-primary" type="submit">Enviar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    © 2025 CH Tennis Academy · Todos los derechos reservados
+  </footer>
+
+  <!-- JS externo -->
+  <script src="main.js"></script>
+</body>
+</html>
