@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="date"] {
+            width: calc(100% - 12px);
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .radio-group label {
+            font-weight: normal;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 10px;
+        }
+        .grid-item {
+            grid-column: span 1;
+        }
+        .grid-item-wide {
+            grid-column: span 2;
+        }
+        .grid-item-full {
+            grid-column: span 3;
+        }
+    </style>
+</head>
+<body>
+    <h2>EMPLOYMENT / JOB APPLICATION</h2>
+
+    <div class="section">
+        <h3>PERSONAL INFORMATION</h3>
+        <div class="grid-container">
+            <div class="grid-item-wide form-group">
+                <label for="full_name">FULL NAME:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="first_name" placeholder="First" style="width: 30%;">
+                    <input type="text" id="middle_name" placeholder="Middle" style="width: 30%;">
+                    <input type="text" id="last_name" placeholder="Last" style="width: 30%;">
+                </div>
+            </div>
+            <div class="grid-item form-group">
+                <label for="date">DATE:</label>
+                <input type="date" id="date">
+            </div>
+            <div class="grid-item-full form-group">
+                <label for="address">ADDRESS:</label>
+                <input type="text" id="street_address" placeholder="Street Address">
+            </div>
+            <div class="grid-item form-group">
+                <input type="text" id="apt_suite" placeholder="Apt / Suite">
+            </div>
+            <div class="grid-item form-group">
+                <input type="text" id="city" placeholder="City">
+            </div>
+            <div class="grid-item form-group">
+                <input type="text" id="state" placeholder="State">
+            </div>
+            <div class="grid-item form-group">
+                <input type="text" id="zip_code" placeholder="Zip Code">
+            </div>
+            <div class="grid-item-wide form-group">
+                <label for="email">E - MAIL:</label>
+                <input type="email" id="email">
+            </div>
+            <div class="grid-item form-group">
+                <label for="phone">PHONE:</label>
+                <input type="tel" id="phone">
+            </div>
+            <div class="grid-item-full form-group">
+                <label for="ssn">SOCIAL SECURITY NUMBER ( SSN ) :</label>
+                <input type="text" id="ssn">
+            </div>
+            <div class="grid-item form-group">
+                <label for="available_date">DATE AVAILABLE :</label>
+                <input type="date" id="available_date">
+            </div>
+            <div class="grid-item form-group">
+                <label for="desired_pay">DESIRED PAY : $</label>
+                <input type="number" id="desired_pay" style="width: 60px;">
+                <label><input type="radio" name="pay_type" value="hour"> HOUR</label>
+                <label><input type="radio" name="pay_type" value="salary"> SALARY</label>
+            </div>
+            <div class="grid-item-full form-group">
+                <label for="position">POSITION APPLIED FOR :</label>
+                <input type="text" id="position">
+            </div>
+            <div class="grid-item-full form-group">
+                <label>EMPLOYMENT DESIRED :</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="employment_type" value="full-time"> FULL - TIME</label>
+                    <label><input type="radio" name="employment_type" value="part-time"> PART - TIME</label>
+                    <label><input type="radio" name="employment_type" value="seasonal"> SEASONAL</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>EMPLOYMENT ELIGIBILITY</h3>
+        <div class="form-group">
+            <label>ARE YOU A U.S. CITIZEN ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="citizen" value="yes"> YES</label>
+                <label><input type="radio" name="citizen" value="no"> NO</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>IF NO , ARE YOU ALLOWED TO WORK IN THE U.S. ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="work_allowed" value="yes"> YES</label>
+                <label><input type="radio" name="work_allowed" value="no"> NO</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>HAVE YOU EVER WORKED FOR THIS EMPLOYER ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="worked_before" value="yes"> YES</label>
+                <label><input type="radio" name="worked_before" value="no"> NO</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>IF YES , WRITE THE START AND END DATES :</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="date" id="start_date_previous">
+                <input type="date" id="end_date_previous">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>HAVE YOU EVER BEEN CONVICTED OF A FELONY ?</label>
+            <div class="radio-group">
+                <label><input type="radio" name="felony" value="yes"> YES</label>
+                <label><input type="radio" name="felony" value="no"> NO</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="felony_explanation">IF YES , PLEASE EXPLAIN :</label>
+            <textarea id="felony_explanation" rows="3" style="width: calc(100% - 12px); padding: 5px; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box;"></textarea>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>EDUCATION</h3>
+        <div class="form-group">
+            <label for="high_school">HIGH SCHOOL :</label>
+            <input type="text" id="high_school">
+        </div>
+        <div class="grid-container">
+            <div class="grid-item-wide form-group">
+                <label for="high_school_city_state">CITY / STATE :</label>
+                <input type="text" id="high_school_city_state">
+            </div>
+            <div class="grid-item form-group">
+                <label>FROM : <input type="date" id="high_school_from" style="width: auto;"></label>
+            </div>
+            <div class="grid-item form-group">
+                <label>TO : <input type="date" id="high_school_to" style="width: auto;"></label>
+            </div>
+            <div class="grid-item-wide form-group">
+                <label>GRADUATE ?
+                    <label><input type="radio" name="high_school_graduate" value="yes"> YES</label>
+                    <label><input type="radio" name="high_school_graduate" value="no"> NO</label>
+                </label>
+            </div>
+            <div class="grid-item form-group">
+                <label>DIPLOMA : <input type="text" id="high_school_diploma" style="width: 80%;"></label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="college">COLLEGE :</label>
+            <input type="text" id="college">
+        </div>
+        <div class="grid-container">
+            <div class="grid-item-wide form-group">
+                <label for="college_city_state">CITY / STATE :</label>
+                <input type="text" id="college_city_state">
+            </div>
+            <div class="grid-item form-group">
+                <label>FROM : <input type="date" id="college_from" style="width: auto;"></label>
+            </div>
+            <div class="grid-item form-group">
+                <label>TO : <input type="date" id="college_to" style="width: auto;"></label>
+            </div>
+            <div class="grid-item-wide form-group">
+                <label>GRADUATE ?
+                    <label><input type="radio" name="college_graduate" value="yes"> YES</label>
+                    <label><input type="radio" name="college_graduate" value="no"> NO</label>
+                </label>
+            </div>
+            <div class="grid-item form-group">
+                <label>DEGREE : <input type="text" id="college_degree" style="width: 80%;"></label>
+            </div>
+        </div>
+    </div>
+
+    </body>
+</html>
