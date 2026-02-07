@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cinder Always On - BCN OS Summit</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="slides.css"></link>
+  </head>
+  <body>
+    <textarea id="source">
+
+layout: true
+name: title_layout
+class: title_slide
+
+---
+
+layout: true
+name: section_layout
+class: section_slide
+
+---
+
+layout: true
+name: agenda_layout
+class: content_slide agenda_slide
+
+---
+
+layout: true
+name: thank_you
+class: thank_you
+
+---
+
+layout: true
+name: content_layout
+class: content_slide
+
+---
+
+template: title_layout
+
+# CINDER ALWAYS ON<br>Reliability And Scalability Guide
+
+## Barcelona OpenStack Summit
+
+Michal Dulko - Software Engineer - Intel Corp.<br>
+Gorka Eguileor - Senior Software Engineer - Red Hat, Inc.<br>
+<br>
+26-Oct-2016<br>
+
+---
+
+template: agenda_layout
+
+# AGENDA
+
+- Overview of Cinder Architecture
+- HA of Cinder Services
+- Rolling Upgrades
+- HA of Storage: Replication
+- Tips & Tricks
+- Q&A
+
+---
+
+template: section_layout
+
+ARCHITECTURE OVERVIEW
+
+---
+
+# Cinder Architecture
+
+## A.K.A "Initial fork out of Nova."
+
+.fill-width[![Insert graphic here](assets/architecture/architecture1.svg)]
+
+---
+
+# Cinder Architecture
+
+## Status reporting and volume creation flow.
+
+.fill-width[![Insert graphic here](assets/architecture/architecture2.svg)]
+
+---
+
+# Cinder Architecture
+
+## Management of existing volumes.
+
+.fill-width[![Insert graphic here](assets/architecture/architecture3.svg)]
+
+---
+
+# Cinder Architecture
+
+## cinder-volume ⬌ cinder-volume communication (e.g. migration).
+
+.fill-width[![Insert graphic here](assets/architecture/architecture4.svg)]
+
+---
+
+# Cinder Architecture
+
+## Host boundaries - local drivers: LVM, NFS, Block Device Driver (!)…
+
+.fill-width[![Insert graphic here](assets/architecture/architecture5.svg)]
+
+---
+
+# Cinder Architecture
+
+## cinder-backup service (optional).
+
+.fill-width[![Insert graphic here](assets/architecture/architecture6.svg)]
+
+---
+
+# Cinder Architecture
+
+## Pre-Mitaka flow - cinder-backup talks directly to backend (cinder-volume colocation).
+
+.fill-width[![Insert graphic here](assets/architecture/architecture7.svg)]
+
+---
+
+# Cinder Architecture
+
+## Post-Mitaka flow - cinder-backup communicates with cinder-volume.
+
+.fill-width[![Insert graphic here](assets/architecture/architecture8.svg)]
+
+---
+
+# Cinder Architecture
+
+## Post-Mitaka flow - cinder-bakup communicates with cinder-volume.
+
+.fill-width[![Insert graphic here](assets/architecture/architecture9.svg)]
+
+---
+
+# Cinder Architecture
+
+## Host boundaries - remote driver (e.g. Ceph): remote storage device/backend.
+
+.fill-width[![Insert graphic here](assets/architecture/architecture10.svg)]
+
+---
+
+template: section_layout
+
+HIGH AVAILABILITY
+
+---
+
+# HA of Cinder services
+
+## cinder-api
+
+.left-column[
+- Run multiple instances behind a HAProxy.
+- Be advised of API race conditions in pre-Newton cinder-api.
+]
+
+.right-column[
+![Insert graphic here](assets/ha/haproxy.svg)
+]
+
+---
+
+# HA of Cinder services
+
+## cinder-api race conditions
+
+### Before
+
+```python
+vol = db.volume_get(ctxt, id)
+if vol.status not in ('available', 'in-use'):
+    db.volume_update(ctxt, id, status='retyping')
+```
+
+--
+
+### After
+
+```python
+expected = {'status': ('available', 'in-use')}
+updates = {'status': 'retyping'}
+
+if not volume.conditional_update(updates, expected, None):
+    raise exception.InvalidVolume()
+```
+
+---
+
+# HA of Cinder services
+
+## cinder-scheduler
+
+.left-column[
+- You are able to run multiple instances of cinder-scheduler in A/A fashion.
+- Be advised that cinder-scheduler shares similar scaling issues as nova-scheduler.
+]
+
+.right-column[
+![Insert graphic here](assets/ha/c-sch.svg)
+]
+
+---
+
+# HA of Cinder services
+
+## cinder-volume - Existing support
+
+**Only Active-Passive support**
+
+- Required mutual exclusion
+- Cleanup mechanism
+  - Tracking each service's resources in the cluster
+  - Cleanup on start by the node itself
+  - Cleanup by other services in the cluster
+- Job distribution
+- Operations are not cluster aware (e.g., replication)
+
+---
+
+# HA of Cinder services
+
+## cinder-volume - Custom solutions
+
+- People tried doing Active-Active
+  - Sharing `host` configuration  .red-text[**✖**]
+      - Will breack havoc when a service starts
+      - No required mutual exclussion
+  - Customized Cinder volume service  .green-text[**✓**]
+      - Sharing `host` configuration
+      - No cleanup on service start ➔ Manually
+      - With known workloads
+      - Possibly with locks on shared directory
+
+---
+
+# HA of Cinder services
+
+## cinder-volume - Solution
+
+**Expectations:**
+
+- Tech preview in Ocata
+- Supported by some drivers
+- All features may not be supported by drivers (e.g., replication)
+
+**In the future support for advanced configurations:**
+
+- Will require individual service disable
+- Scenario: 3 clusters and 3 different backends (*G*old, *S*ilver, *B*ronze)
+    - *G* servers with cinder configured with *G* backend
+    - *S* servers with cinder with *s* backend and disabled service with *G*
+      backend
+    - *B* servers with cinder service configured with *B* backend and disabled
+      services for *G* and *S* backends
+- When *G* server goes down we can temporarily enable a couple of *G* services
+  in the *B* or *S* servers to take part of the load and add assurance to no
+  down time of *G* users.
+
+---
+
+# HA of Cinder services
+
+## cinder-volume - Implementation
+
+- Mutual exclusion
+  - DLM via Tooz (Zookeeper, Etcd, Consul...)
+  - Used for core functionality
+  - May be used by drivers
+- Job distribution
+  - Additional cluster message queues and exchanges
+  - Disable works at cluster level
+  - In the future complete disable at service level
+- Cleanup mechanism
+  - Tracking on `workers` DB table
+  - Only for cleanable resource operations
+  - Automatic cleanup by the same service on restart
+  - Fine grained manual cleanup by other servers in cluster
+
+---
+
+# HA of Cinder services
+
+## Workers table in action
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa01.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa02.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa03.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa04.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa05.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa06.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa07.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa08.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa09.svg)]
+
+--
+
+.fill-width[![Workers flow](assets/ha_aa/ha_aa10.svg)]
+
+---
+
+# HA of Cinder services
+
+## cinder-backup
+
+**Supported when decoupled**
+- Horizontally scalable backup service since Mitaka
+- A/A enabled with `backup_use_same_host` defaults to False
+
+**Limitations**
+- There can only be 1 cluster:
+  - Only 1 backup backend
+  - No coupled and decoupled backup service combination
+- API races
+- Cleanup from another node is manual
+
+---
+
+template: section_layout
+
+ROLLING UPGRADES
+
+---
+
+# Rolling Upgrades
+
+## Elements
+
+- Online DB migrations (DB compatiblity).
+- RPC API versioning (communication API compatibility).
+- oslo.versionedobjects (communication payload compatiblity).
+
+--
+
+## Assumptions
+
+- Upgrade order: cinder-api, cinder-scheduler, cinder-volume, cinder-bakup.
+- No release skipping.
+- Continuous deployment from master is allowed.
+- You can achieve live upgrade only if you have a HA deployment.
+
+--
+
+## Advices
+- Having each service deployed in container makes things easier.
+- Make sure there are no stale records in `services` table.
+- Read the release notes before starting.
+
+---
+
+# Rolling Upgrades
+
+## Upgrade procedure (X to X+1).
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade1.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 1. Apply DB schema migrations.
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade2.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 2. Upgrade cinder-api services one-by-one.
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade3.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade4.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade5.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade6.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade7.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 3. Upgrade cinder-scheduler services one-by-one.
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade8.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade9.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade10.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 4. Upgrade cinder-volume service.
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade11.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade12.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 5. Upgrade cinder-backup services one-by-one.
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade13.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade14.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade15.svg)]
+
+--
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade16.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 6. Restart cinder-api services and send SIGHUP to the rest.
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade17.svg)]
+
+---
+
+# Rolling Upgrades
+
+## 7. Start applying online data migrations (Newton ➡ Ocata upgrade).
+
+.fill-width[![Insert graphic here](assets/upgrades/upgrade18.svg)]
+
+---
+
+# Rolling Upgrades
+
+## Status in recent releases
+
+| From release | To release | Status               |
+|:------------:|:----------:|:--------------------:|
+| Kilo         | Liberty    | Impossible           |
+| Liberty      | Mitaka     | Experimental         |
+| Mitaka       | Newton     | Experimental+        |
+| Newton       | Ocata      | Supported and tested |
+
+---
+
+template: section_layout
+
+STORAGE HIGH AVAILABILITY
+
+---
+
+# Replication v2.1
+
+**Smoking Hole Disaster Recovery**
+
+- Only use case contemplated
+- Support multiple DR sites
+- Replication type is driver/backend dependent:
+  - Per volume replication
+  - Per backend/pool
+- Failover is not automatic ➔ Admin decides when primary is dead
+- After failover
+  - Replicated resources are used from the DR site
+  - Non-replicated resources are not available
+
+---
+
+# Replication v2.1 (II)
+
+**How it works**
+
+- Drivers report replication capability
+- Volume type: `replication_enabled='<is> True'`
+- Scheduler matches `replication_enabled` with capabilities
+- On `failover-host` request
+  - Driver changes resources
+  - Driver changes used backend location
+  - Service is disabled
+
+---
+
+# Replication v2.1 - Things missing
+
+**There's room for improvement**
+
+- OpenStack is unaware of the failover
+  - Cinder does tell anybody about it
+  - Admin must re-configure OpenStack ➔ Re-attach volumes
+- There's no secondary promotion ➔ It always say "failed over"
+- Failback not supported on all drivers
+- Freeze/Unfreeze don't work ➔ Equivalent to disabled
+- Inconsistent behavior among drivers:
+  - Treatment of non replicated volumes
+  - Some drivers don't use `replication_status`
+- Secondary sites not contacted until failover
+  - We could detect incorrect configuration at the worst time
+
+**We will be working on some of these in this release**
+
+???
+
+Freeze: Do not allow create/delete actions
+
+Disable only prevents operations going through the scheduler
+
+
+---
+
+template: section_layout
+
+TIPS & TRICKS
+
+???
+
+To make cinder more reliable and minimize downtime
+
+---
+
+# Common Bottleneck
+
+**Under heavy load operations take exponentially longer to complete**
+  - Very visible in older releases
+  - More visible on API only operations
+  - Also affects non API operations
+
+**Problem**
+  - Bottleneck on DB connections ➔ Earlier releases 1000 to 15
+  - People used to increase number of API workers
+
+--
+
+**Solution**
+  - Configuration options
+      - `wsgi_default_pool_size`: Available greenthread (1000 before, now 100)
+      - `max_pool_size`: Maximum number of SQL connections to keep open. (5)
+      - `max_overflow`: The maximum number of sleeping SQL connections. (10 before, now 50)
+  - In Cinder it's important for all services
+
+---
+
+# Common Bottleneck (II)
+
+.left-column[
+**Defining proper values**
+
+  - API recommendation: `wsgi_default_pool_size`=`max_overflow`
+  - Cloud characterization
+      - Use [Rally](https://wiki.openstack.org/wiki/Rally) to run scenarios
+      - Use [connmon](https://bitbucket.org/zzzeek/connmon) to see connections
+  - Adjust max connection on RDBMS servers: [post on how to calculate it](https://gorka.eguileor.com/os-db-connections)
+
+**Additional Recomendation**
+
+ - Use PyMySQL library for DB connections
+ - Older default: MySQL-Python
+     - Cannot be eventlet monekypatched
+     - Blocks other greenthreads
+]
+
+.right-column[
+![connmon screeshot](assets/connmon.png)
+]
+
+---
+
+# Stopping Cinder
+
+**Basic questions**
+
+- How should I stop cinder services?
+- Will this do a clean stop?
+- Is it the same for all Cinder services?
+- What's this, SysAdmin 101?
+- The answer is obvious, right?
+
+```
+  cinder service-disable --reason "Upgrade" host@backend cinder-volume
+  sudo systemctl stop openstack-cinder-volume
+```
+???
+
+We all want our services to stop cleanly
+
+So we ask ourselves some basic questions like these ones
+
+These may seem like obvious questions, but bear with me for a little bit
+
+---
+
+# Stopping Cinder
+
+**Scenario**
+
+- Cinder services are under heavy load
+- We want to stop Cinder services ➔ Maintenance,Upgrade
+- For explanation purposes order will be Scheduler, API, Volume
+
+???
+
+Situation would be very similar for normal upgrades
+
+What we'll be discussing here also applies to other OpenStack services
+
+--
+
+**Scheduler**
+
+- We stop the scheduler with `systemctl`
+- Check resources and operations
+--
+  .green-text[**✓**]
+
+--
+
+**API**
+
+- We stop the api with `systemctl`
+- Check resources and operations
+--
+  .red-text[**✖**]
+  - See failed Attach/Detach operations
+  - Volumes stuck in *attaching/detaching* state
+- What happened?
+
+---
+
+# Stopping Cinder - Services 101
+
+- Check the systemd journal ➔ SIGTERM was sent to all processes
+- Check the code ➔ Main process will also send SIGTERM to child processes
+
+--
+- Solution ➔ systemd.kill should not be sending SIGTERM to children
+- /etc/systemd/system/multi-user.target.wants/openstack-cinder-scheduler.service
+  - `KillMode` is not defined ➔ defaults to *control-group*
+  - Add `KillMode=process`
+
+--
+
+We try again and...  .red-text[**✖**]
+
+- Fewer error cases ➔ only when *attach/detach* > 60 secs
+- *attach/detach* are synchronous operations ➔  `rpc_response_timeout` is set to 80 seconds
+
+```
+● openstack-cinder-api.service - OpenStack Cinder API Server
+   Active: failed (Result: signal) ...
+  Process: 6837 ExecStart=[...] (code=killed, signal=ALRM)
+ Main PID: 6837 (code=killed, signal=ALRM)
+```
+
+???
+
+60 seconds is a long time, but as we mentioned earlier, if we don't set our DB connections right, it can happen
+
+---
+
+# Stopping Cinder - Timeout
+
+**Oslo Service Shutdown process**
+
+- systemd.kill sends SIGTERM to main process
+- Main process asks services to `stop`
+- Waits for services to stop for `graceful_shutdown_timeout` seconds
+- If they don't stop ➔ SIGALRM
+
+--
+
+**Recommendation**
+
+- `graceful_shutdown_timeout` defaults to 60 seconds
+- `rpc_response_timeout` defaults to 60 seconds
+- `graceful_shutdown_timeout` >= `rpc_response_timeout`
+
+???
+
+If we don't touch defaults, resources should not be affected by shutdown
+
+---
+
+# Stopping Cinder - API Service
+
+.red-text[**But it still won't shutdown properly!!**]
+
+```
+● openstack-cinder-api.service - OpenStack Cinder API Server
+   Active: failed (Result: signal) ...
+  Process: 9368 ExecStart=[...] (code=killed, signal=KILL)
+ Main PID: 9368 (code=killed, signal=KILL)
+```
+
+--
+
+- There is a bug in eventlet.wsgi preventing WSGI server from stopping
+- systemctl.kill escalated from `SIGTERM` to `SIGKILL`
+  - After `TimeoutStopSec` (default: `DefaultTimeoutStopSec`)
+  - `DefaultTimeoutStopSec`
+      - Defined in /etc/systemd/system.conf
+      - Default: 90 secs
+
+???
+
+Even if it's not a clean stop, it will not leave resources in the wrong state
+
+---
+
+# Stopping Cinder - Volume Service
+
+**Cinder volume is in the data path**
+
+- Performs long operations:
+  - Creating volume from image
+  - Migrating volume
+- Insufficient default `graceful_shutdown_timeout`
+
+--
+
+**Solution**
+
+- Increase timeouts to an arbitrary number
+  - Difficult to decide good numbers
+  - Depends on cloud, backend, workload...
+- Prevent systemctl from sending kill signals
+  - Manual process ➔ More tedious
+  - More control
+
+---
+
+# Stopping Cinder - No auto-kill
+
+  - Prevent systemctl.kill from sending `SIGKILL`
+  - Change *openstack-cinder-volume.service*
+```
+ExecStop=/bin/kill -SIGTERM $MAINPID
+KillMode=none
+```
+  - Stop request ➔ `systemctl stop openstack-cinder-volume`
+  - Check resource status progress
+```
+mysql cinder -e "
+select id,status,display_name from volumes
+where not deleted and
+      status not like 'error%' and status not in ('available', 'in-use')
+      and host like '`hostname`%';"
+```
+  - Force stop ➔ `systemctl kill -s SIGKILL`
+
+---
+
+# Stopping Cinder - Summary
+
+**Checklist**
+
+- Check your service definitions
+  - `KillMode=process`
+- Properly set timeouts:
+  - `TimeoutStopSec` > `graceful_shutdown_timeout`
+  - `graceful_shutdown_timeout` >= `rpc_response_timeout`
+- Careful consideration with volume service
+- Reload your service configurations
+  - After making changes
+  - Before stopping your service
+  - `systemctl daemon-reload`
+
+---
+
+# Changing Log Levels
+
+**The issue**
+
+- Sooner or later we'll want DEBUG log level
+- But it's not enabled
+- Changing requires
+  - Restart: `systemctl restart openstack-cinder-volume`
+  - Reload: `systemctl kill -s SIGHUP openstack-cinder-volume`
+- Both methods stop & start service
+  - Issues mentioned earlier
+  - Disrupt our cloud
+
+--
+
+**Solution**
+
+- Minimal disruption: Sub-second
+- Hackish method
+- Requires GDB system package
+
+
+???
+
+It takes approximately 0.5 second per process
+
+---
+
+# Changing Log Levels - os-log-level.py
+
+```bash
+$ gdb -q -x os-log-level.py -ex 'py change_log_level(1234, "DEBUG")'
+```
+
+```python
+from subprocess import check_output
+
+import gdb
+
+def change_log_level(pid, level):
+    gdb.execute('attach %s' % pid)
+    gdb.execute('call PyGILState_Ensure()')
+    gdb.execute('call PyRun_SimpleString("'
+                'from oslo_log import log as __my_log; '
+                '[v.logger.setLevel(__my_log.%s) '
+                'for k, v in __my_log._loggers.items()]")' % level)
+    gdb.execute('call PyGILState_Release($$)')
+    gdb.execute('detach')
+    gdb.execute('quit')
+```
+
+???
+
+This is a simplified version of my script
+
+- Requires pid ➔ Mine uses binary names & changes all processes
+- No error control
+- Changes all log levels ➔ Specific log paths (cinder, eventlet, sqlalchemy)
+
+---
+
+# Changing Log Levels - Minimizing the impact
+
+It can be simplified with an Ansible playbook:
+  - Install *GDB server* in Overcloud nodes
+  - Install *GDB* in Undercloud
+  - Using Ansible:
+    - Locate service pid
+    - Launch `gdbserver` to attach to pid
+  - Connect from overcloud's GDB and change log levels
+
+???
+
+My script is just a PoC, so I haven't had time to improve it
+
+---
+
+# Service down detection
+
+How does the service down detection work?
+
+- Cinder uses DB heartbeats
+- Services report every `report_interval` seconds (default 10)
+- Down if report older than `service_down_time` seconds (default 60)
+- Fastest detection
+  - Reducing `service_down_time` value
+  - Be careful with transient DB issues
+  - Increase report frequency
+  - Leads to increment in DB queries
+
+???
+
+This is part of the basics, but I still get asked about it sometime
+
+---
+
+template: thank_you
+
+# THANK YOU
+
+**Presentation available at:**
+
+- http://akrog.github.io/cinder-always-on
+
+**Michal Dulko**
+
+![email](assets/email.png)   [michal.dulko@intel.com](mailto:michal.dulko@intel.com)
+![irc](assets/irc.png)   [dulek (freenode)](irc://chat.freenode.net/dulek,isnick)
+
+**Gorka Eguileor**
+
+![twitter](assets/twitter.png) [twitter.com/geguileo](https://twitter.com/geguileo)
+![blog](assets/wp.png)   [gorka.eguileor.com](https://gorka.eguileor.com)
+![irc](assets/irc.png)   [geguileo (freenode)](irc://chat.freenode.net/geguileo,isnick)
+
+---
+
+# Legal Notices and Disclaimers
+
+Intel disclaims all express and implied warranties, including without
+limitation, the implied warranties of merchantability, fitness for a particular
+purpose, and non-infringement, as well as any warranty arising from course of
+performance, course of dealing, or usage in trade.
+
+Intel, the Intel logo and others are trademarks of Intel Corporation in the
+U.S. and/or other countries.
+
+*Other names and brands may be claimed as the property of others.
+
+---
+
+template: section_layout
+
+![CC](assets/cc.svg)
+.medium-text[
+Except where otherwise noted, this work is licensed under
+
+http://creativecommons.org/licenses/by/4.0/
+]
+
+    </textarea>
+    <script src="remark.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+        ratio: '16:9',
+        slideNumberFormat: '%current%   <span class="designator"> Cinder Always On · Oct-2016 · BCN</span>',
+        countIncrementalSlides: false
+      });
+    </script>
+  </body>
+</html>
+
+<!-- vim: set ft=markdown : -->
